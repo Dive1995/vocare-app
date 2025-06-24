@@ -1,6 +1,7 @@
 "use client";
 
 import MonthlyView from "@/components/calendar/MonthlyView";
+import WeeklyView from "@/components/calendar/WeeklyView";
 
 // import { useEffect, useState } from "react";
 
@@ -36,7 +37,8 @@ export default function Home() {
       </div>
 
       <div>
-        <MonthlyView />
+        {/* <MonthlyView /> */}
+        <WeeklyView />
       </div>
     </div>
   );
