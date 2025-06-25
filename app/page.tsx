@@ -5,20 +5,27 @@ import WeeklyView from "@/components/calendar/WeeklyView";
 import DatePicker from "@/components/DatePicker";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Appointment } from "@/types/models";
 import { PlusIcon, Settings2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [appointments, setAppointments] = useState([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [error, setError] = useState(null);
+  const [date, setDate] = useState(new Date());
 
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const res = await fetch("/api/appointments");
+        const res = await fetch("/api/appointments", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ monthDate: date }),
+        });
+
         if (!res.ok) throw new Error("Failed to fetch appointments");
 
-        const data = await res.json();
+        const data: Appointment[] = await res.json();
         console.log("Appointments: ", data);
         setAppointments(data);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,8 +35,7 @@ export default function Home() {
     };
 
     fetchAppointments();
-  }, []);
-  const [date, setDate] = useState(new Date());
+  }, [date]);
 
   return (
     <div className="max-w-6xl m-auto p-3 my-4">
