@@ -2,9 +2,14 @@ import { useEffect, useState } from "react";
 import { startOfWeek, format, isSameDay } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { de } from "date-fns/locale";
+import { Appointment } from "@/types/models";
 
-function WeeklyView() {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+type Props = {
+  appointments: Appointment[];
+  selectedDate: Date;
+};
+
+function WeeklyView({ selectedDate, appointments }: Props) {
   const [currentWeek, setCurrentWeek] = useState<Date[]>([]);
 
   const timeZone = "Europe/Berlin";
@@ -18,22 +23,45 @@ function WeeklyView() {
     });
 
     const weekDays = [];
+
     for (let i = 0; i < 7; i++) {
       const day = new Date(startOfWeekDate);
       day.setDate(startOfWeekDate.getDate() + i);
       weekDays.push(day);
     }
+
     setCurrentWeek(weekDays);
   }, [selectedDate]);
 
+  function hexToRGBA(hex: string, opacity: number) {
+    let c: any;
+    if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+      c = hex.substring(1).split("");
+      if (c.length === 3) {
+        c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+      }
+      c = "0x" + c.join("");
+      return (
+        "rgba(" +
+        [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(",") +
+        `,${opacity})`
+      );
+    }
+    throw new Error("Bad Hex");
+  }
+
   return (
     <>
+      {/* first row to display the week dates and days */}
       <div className="grid grid-cols-[50px_repeat(7,1fr)]">
-        <div></div>
+        <div>
+          {/* this empty div is just to get the week started from the 2nd column in the grid */}
+        </div>
+
         {currentWeek.map((day, dayIndex) => (
           <div
             key={dayIndex}
-            className={`h-9 p-2 mb-1 ${
+            className={` h-fit p-2 mb-1 ${
               isSameDay(day, now)
                 ? "bg-green-50 rounded-lg border border-green-200"
                 : ""
@@ -48,6 +76,7 @@ function WeeklyView() {
         ))}
       </div>
 
+      {/* time column */}
       <div className="grid grid-cols-[50px_repeat(7,1fr)]">
         <div className="flex flex-col">
           {[...Array(24)].map((_, hour) => (
@@ -68,6 +97,46 @@ function WeeklyView() {
                     isSameDay(day, now) ? "bg-green-50" : ""
                   }`}></div>
               ))}
+
+              {/* shows the appointment */}
+              {appointments
+                .filter((appt) => {
+                  const start = new Date(appt.start);
+                  const end = new Date(appt.end);
+
+                  if (end <= start) return false;
+                  return isSameDay(start, day);
+                })
+                .map((appt, i) => {
+                  const start = new Date(appt.start);
+                  const end = new Date(appt.end);
+
+                  const startMinutes =
+                    start.getHours() * 60 + start.getMinutes();
+                  const endMinutes = end.getHours() * 60 + end.getMinutes();
+                  const duration = endMinutes - startMinutes;
+
+                  const top = (startMinutes / 1440) * 100;
+                  const height = (duration / 1440) * 100;
+
+                  return (
+                    <div
+                      key={i}
+                      className="absolute left-1 right-1 text-xs p-1 rounded shadow-md overflow-hidden"
+                      style={{
+                        top: `${top}%`,
+                        height: `${height}%`,
+                        borderLeft: `4px solid ${appt.category.color}`,
+                        backgroundColor: hexToRGBA(appt.category.color, 0.3),
+                      }}>
+                      <strong>{appt.title}</strong>
+                      <br />
+                      <span className="text-[10px]">
+                        {format(start, "HH:mm")} - {format(end, "HH:mm")}
+                      </span>
+                    </div>
+                  );
+                })}
 
               {/* this will show a line for the current time */}
               <div
