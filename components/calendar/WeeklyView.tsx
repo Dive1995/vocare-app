@@ -3,6 +3,8 @@ import { startOfWeek, format, isSameDay } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { de } from "date-fns/locale";
 import { Appointment } from "@/types/models";
+import { getPositionedAppointmentForWeekView } from "@/lib/calendarViewUtils";
+import WeeklyAppointmentBlock from "./WeeklyAppointmentBlock";
 
 type Props = {
   appointments: Appointment[];
@@ -32,23 +34,6 @@ function WeeklyView({ selectedDate, appointments }: Props) {
 
     setCurrentWeek(weekDays);
   }, [selectedDate]);
-
-  function hexToRGBA(hex: string, opacity: number) {
-    let c: any;
-    if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
-      c = hex.substring(1).split("");
-      if (c.length === 3) {
-        c = [c[0], c[0], c[1], c[1], c[2], c[2]];
-      }
-      c = "0x" + c.join("");
-      return (
-        "rgba(" +
-        [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(",") +
-        `,${opacity})`
-      );
-    }
-    throw new Error("Bad Hex");
-  }
 
   return (
     <>
@@ -99,44 +84,11 @@ function WeeklyView({ selectedDate, appointments }: Props) {
               ))}
 
               {/* shows the appointment */}
-              {appointments
-                .filter((appt) => {
-                  const start = new Date(appt.start);
-                  const end = new Date(appt.end);
-
-                  if (end <= start) return false;
-                  return isSameDay(start, day);
-                })
-                .map((appt, i) => {
-                  const start = new Date(appt.start);
-                  const end = new Date(appt.end);
-
-                  const startMinutes =
-                    start.getHours() * 60 + start.getMinutes();
-                  const endMinutes = end.getHours() * 60 + end.getMinutes();
-                  const duration = endMinutes - startMinutes;
-
-                  const top = (startMinutes / 1440) * 100;
-                  const height = (duration / 1440) * 100;
-
-                  return (
-                    <div
-                      key={i}
-                      className="absolute left-1 right-1 text-xs p-1 rounded shadow-md overflow-hidden"
-                      style={{
-                        top: `${top}%`,
-                        height: `${height}%`,
-                        borderLeft: `4px solid ${appt.category.color}`,
-                        backgroundColor: hexToRGBA(appt.category.color, 0.3),
-                      }}>
-                      <strong>{appt.title}</strong>
-                      <br />
-                      <span className="text-[10px]">
-                        {format(start, "HH:mm")} - {format(end, "HH:mm")}
-                      </span>
-                    </div>
-                  );
-                })}
+              {getPositionedAppointmentForWeekView(appointments, day).map(
+                (item, i) => (
+                  <WeeklyAppointmentBlock key={i} item={item} />
+                )
+              )}
 
               {/* this will show a line for the current time */}
               <div
