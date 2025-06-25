@@ -5,10 +5,11 @@ import WeeklyView from "@/components/calendar/WeeklyView";
 import DatePicker from "@/components/DatePicker";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Appointment } from "@/types/models";
+import { Appointment, AppointmentForm } from "@/types/models";
 import { PlusIcon, Settings2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toZonedTime } from "date-fns-tz";
+import AppointmentFormDialog from "@/components/AppointmentFormDialog";
 
 export default function Home() {
   const timeZone = "Europe/Berlin"; // to make sure we have consistent timestamp regardless of user's local time
@@ -17,7 +18,9 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState(
     toZonedTime(new Date(), timeZone)
   );
+  const [openTerminDialog, setOpenTerminDialog] = useState(false);
 
+  // fetches appointment data, depending on the date selected
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -141,6 +144,20 @@ export default function Home() {
     fetchAppointments();
   }, [selectedDate]);
 
+  const handleNewAppointmentSubmit = async (data: AppointmentForm) => {
+    const res = await fetch("/api/newAppointment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (!res.ok) throw new Error("Failed to add new appointment");
+
+    const result: Appointment = await res.json();
+
+    console.log("new appointment saved: ", result);
+  };
+
   return (
     <div className="max-w-6xl m-auto p-3 my-4">
       <h1 className="text-3xl text-gray-700">Terminnen</h1>
@@ -162,7 +179,7 @@ export default function Home() {
                 <Settings2Icon />
                 Termine filtern
               </Button>
-              <Button>
+              <Button onClick={() => setOpenTerminDialog(true)}>
                 <PlusIcon />
                 Neuer Termin
               </Button>
@@ -188,6 +205,12 @@ export default function Home() {
           </div>
         </Tabs>
       </div>
+
+      <AppointmentFormDialog
+        open={openTerminDialog}
+        onOpenChange={setOpenTerminDialog}
+        onSubmit={handleNewAppointmentSubmit}
+      />
     </div>
   );
 }

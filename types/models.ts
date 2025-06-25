@@ -39,13 +39,23 @@ export interface Activity {
 
 export interface Appointment {
   id: string;
-  start: Date;
-  end: Date;
+  start: string;
+  end: string;
   location: string;
   patient: Patient;
   category: Category;
   attachements: [] | null;
   notes: string;
   title: string;
-  activities: Activity[];
+  activities: Activity[] | null;
+}
+
+export interface AppointmentForm {
+  start: string;
+  end: string;
+  location: string;
+  patient: string;
+  category: string;
+  notes: string;
+  title: string;
 }
