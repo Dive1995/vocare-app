@@ -23,6 +23,15 @@ import {
 import FilterPopover from "@/components/FilterPopover";
 import ListView from "@/components/calendar/ListView";
 
+import {
+  fetchAppointments,
+  fetchCategories,
+  fetchPatients,
+  addNewAppointment,
+  updateAppointment,
+} from "@/lib/appointmentService";
+import LoadingSpinner from "@/components/LoadingSpinner";
+
 export default function Home() {
   const timeZone = "Europe/Berlin";
 
@@ -33,6 +42,8 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState(
     toZonedTime(new Date(), timeZone)
   );
+
+  const [loadingAppointments, setLoadingAppointments] = useState(false);
 
   const [openTerminDialog, setOpenTerminDialog] = useState(false);
   const [selectedAppointment, setSelectedAppointment] =
@@ -45,42 +56,27 @@ export default function Home() {
   >([]);
 
   useEffect(() => {
-    fetchAppointments();
+    loadAppointments();
   }, [selectedDate]);
 
   // fetch categories only on the first page load
   useEffect(() => {
-    const fetchCategories = async () => {
+    const loadCategories = async () => {
       try {
-        const res = await fetch("/api/categories", {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-
-        if (!res.ok) throw new Error("Failed to fetch categories");
-
-        const data: Category[] = await res.json();
+        const data = await fetchCategories();
         setCategories(data);
       } catch (err: any) {
         console.log("Error trying to fetch categories: ", err.message);
       }
     };
 
-    fetchCategories();
+    loadCategories();
   }, []);
 
   // search patients
   const fetchPatientBySearch = async (search: string) => {
     try {
-      const res = await fetch("/api/patients", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ search: search }),
-      });
-
-      if (!res.ok) throw new Error("Failed to fetch patients");
-
-      const data: PatientSearchResult[] = await res.json();
+      const data = await fetchPatients(search);
       setPatients(data);
     } catch (err: any) {
       console.log("Error trying to fetch patients: ", err.message);
@@ -100,20 +96,15 @@ export default function Home() {
     setFilteredAppointments(filtered);
   }, [appointments, filterCategory, filterPatient]);
 
-  const fetchAppointments = async () => {
+  const loadAppointments = async () => {
+    setLoadingAppointments(true);
     try {
-      const res = await fetch("/api/appointments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ monthDate: selectedDate }),
-      });
-
-      if (!res.ok) throw new Error("Failed to fetch appointments");
-
-      const data: Appointment[] = await res.json();
+      const data = await fetchAppointments(selectedDate);
       setAppointments(data);
     } catch (err: any) {
       console.log("Error trying to fetch appointments: ", err.message);
+    } finally {
+      setLoadingAppointments(false);
     }
   };
 
@@ -126,30 +117,22 @@ export default function Home() {
   };
 
   const handleNewAppointmentSubmit = async (data: AppointmentForm) => {
-    const res = await fetch("/api/newAppointment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-
-    if (!res.ok) throw new Error("Failed to add new appointment");
-
-    await fetchAppointments();
+    try {
+      await addNewAppointment(data);
+      await loadAppointments();
+    } catch (err: any) {
+      console.log("Failed to add new appointment:", err.message);
+    }
   };
 
   const handleAppointmentEdit = async (data: AppointmentForm) => {
-    const res = await fetch(
-      `/api/updateAppointment/${selectedAppointment?.id}`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }
-    );
-
-    if (!res.ok) throw new Error("Failed to update appointment");
-
-    await fetchAppointments();
+    try {
+      if (!selectedAppointment) return;
+      await updateAppointment(selectedAppointment.id, data);
+      await loadAppointments();
+    } catch (err: any) {
+      console.log("Failed to update appointment:", err.message);
+    }
   };
 
   const handleAppointmentDoubleClick = (appt: Appointment) => {
@@ -204,30 +187,34 @@ export default function Home() {
             </div>
           </div>
 
-          <div>
-            <TabsContent value="list">
-              <ListView
-                appointments={filteredAppointments}
-                onSelectAppointment={handleAppointmentDoubleClick}
-              />
-            </TabsContent>
-            <TabsContent value="week">
-              <WeeklyView
-                selectedDate={selectedDate}
-                appointments={filteredAppointments}
-                onSelectAppointment={handleAppointmentDoubleClick}
-                onEmptySpaceClick={handleEmptySpaceClick}
-              />
-            </TabsContent>
-            <TabsContent value="month">
-              <MonthlyView
-                selectedDate={selectedDate}
-                appointments={filteredAppointments}
-                onSelectAppointment={handleAppointmentDoubleClick}
-                onEmptySpaceClick={handleEmptySpaceClick}
-              />
-            </TabsContent>
-          </div>
+          {loadingAppointments ? (
+            <LoadingSpinner />
+          ) : (
+            <div>
+              <TabsContent value="list">
+                <ListView
+                  appointments={filteredAppointments}
+                  onSelectAppointment={handleAppointmentDoubleClick}
+                />
+              </TabsContent>
+              <TabsContent value="week">
+                <WeeklyView
+                  selectedDate={selectedDate}
+                  appointments={filteredAppointments}
+                  onSelectAppointment={handleAppointmentDoubleClick}
+                  onEmptySpaceClick={handleEmptySpaceClick}
+                />
+              </TabsContent>
+              <TabsContent value="month">
+                <MonthlyView
+                  selectedDate={selectedDate}
+                  appointments={filteredAppointments}
+                  onSelectAppointment={handleAppointmentDoubleClick}
+                  onEmptySpaceClick={handleEmptySpaceClick}
+                />
+              </TabsContent>
+            </div>
+          )}
         </Tabs>
       </div>
 

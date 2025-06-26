@@ -67,7 +67,7 @@ function MonthlyView({
         {days.map((day, index) => (
           <div
             key={index}
-            onClick={onEmptySpaceClick}
+            onDoubleClick={onEmptySpaceClick}
             className={`aspect-square p-2 text-sm border border-gray-200 font-semibold font-gray-700 `}>
             <span
               className={`${

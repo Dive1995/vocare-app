@@ -84,7 +84,7 @@ function WeeklyView({
             <div key={dayIndex} className="border-l relative">
               {[...Array(24)].map((_, hour) => (
                 <div
-                  onClick={onEmptySpaceClick}
+                  onDoubleClick={onEmptySpaceClick}
                   key={hour}
                   className={`h-[60px] border-b ${
                     isSameDay(day, now) ? "bg-green-50" : ""

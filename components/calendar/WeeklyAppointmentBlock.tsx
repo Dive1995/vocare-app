@@ -15,7 +15,7 @@ export default function WeeklyAppointmentBlock({ item, onClick }: Props) {
     <>
       <AppointmentHoverCard appointment={appt}>
         <div
-          onDoubleClick={onClick}
+          onClick={onClick}
           className="absolute left-1 right-1 text-xs p-1 rounded shadow-md overflow-hidden"
           style={{
             top: `${top}%`,

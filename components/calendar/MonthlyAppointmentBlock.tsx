@@ -15,7 +15,7 @@ function MonthlyAppointmentBlock({ appointment, onClick }: Props) {
     <>
       <AppointmentHoverCard appointment={appointment}>
         <div
-          onDoubleClick={onClick}
+          onClick={onClick}
           className="text-[10px] px-2 py-0.5 rounded-sm truncate"
           style={{
             backgroundColor: bgColor,
