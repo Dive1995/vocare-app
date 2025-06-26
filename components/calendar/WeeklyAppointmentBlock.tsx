@@ -3,17 +3,19 @@ import { PositionedAppointment } from "@/lib/calendarViewUtils";
 import { format } from "date-fns";
 import AppointmentHoverCard from "../AppointmentHoverCard";
 
-export default function WeeklyAppointmentBlock({
-  item,
-}: {
+type Props = {
   item: PositionedAppointment;
-}) {
+  onClick: () => void;
+};
+
+export default function WeeklyAppointmentBlock({ item, onClick }: Props) {
   const { appt, start, end, top, height } = item;
 
   return (
     <>
       <AppointmentHoverCard appointment={appt}>
         <div
+          onDoubleClick={onClick}
           className="absolute left-1 right-1 text-xs p-1 rounded shadow-md overflow-hidden"
           style={{
             top: `${top}%`,

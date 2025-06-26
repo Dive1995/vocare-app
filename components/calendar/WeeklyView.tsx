@@ -9,9 +9,14 @@ import WeeklyAppointmentBlock from "./WeeklyAppointmentBlock";
 type Props = {
   appointments: Appointment[];
   selectedDate: Date;
+  onSelectAppointment: (appointment: Appointment) => void;
 };
 
-function WeeklyView({ selectedDate, appointments }: Props) {
+function WeeklyView({
+  selectedDate,
+  appointments,
+  onSelectAppointment,
+}: Props) {
   const [currentWeek, setCurrentWeek] = useState<Date[]>([]);
 
   const timeZone = "Europe/Berlin";
@@ -86,7 +91,11 @@ function WeeklyView({ selectedDate, appointments }: Props) {
               {/* shows the appointment */}
               {getPositionedAppointmentForWeekView(appointments, day).map(
                 (item, i) => (
-                  <WeeklyAppointmentBlock key={i} item={item} />
+                  <WeeklyAppointmentBlock
+                    onClick={() => onSelectAppointment(item.appt)}
+                    key={i}
+                    item={item}
+                  />
                 )
               )}
 

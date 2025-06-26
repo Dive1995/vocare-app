@@ -17,7 +17,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { formatISO } from "date-fns";
+import { addHours, format, formatISO } from "date-fns";
 import { toast } from "sonner";
 
 const patients = [
@@ -81,8 +81,8 @@ export default function AppointmentFormDialog({
 }: Props) {
   const [formData, setFormData] = useState<AppointmentForm>({
     title: "",
-    start: formatISO(new Date()),
-    end: formatISO(new Date()),
+    start: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+    end: format(addHours(new Date(), 1), "yyyy-MM-dd'T'HH:mm"),
     location: "",
     notes: "",
     patient: "",
@@ -93,14 +93,25 @@ export default function AppointmentFormDialog({
     if (appointment) {
       const data = {
         title: appointment.title,
-        start: appointment.start,
-        end: appointment.end,
+        start: format(appointment.start, "yyyy-MM-dd'T'HH:mm"),
+        end: format(appointment.end, "yyyy-MM-dd'T'HH:mm"),
         location: appointment.location,
         notes: appointment.notes,
         patient: appointment.patient.id,
         category: appointment.category.id,
       };
       setFormData(data);
+    } else {
+      // to reset
+      setFormData({
+        title: "",
+        start: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+        end: format(addHours(new Date(), 1), "yyyy-MM-dd'T'HH:mm"),
+        location: "",
+        notes: "",
+        patient: "",
+        category: "",
+      });
     }
   }, [appointment]);
 

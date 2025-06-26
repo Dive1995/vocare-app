@@ -21,9 +21,14 @@ import { getAppointmentsForDay } from "@/lib/calendarViewUtils";
 type Props = {
   appointments: Appointment[];
   selectedDate: Date;
+  onSelectAppointment: (appointment: Appointment) => void;
 };
 
-function MonthlyView({ selectedDate, appointments }: Props) {
+function MonthlyView({
+  selectedDate,
+  appointments,
+  onSelectAppointment,
+}: Props) {
   //   const [selectedMonth, setSelectedMonth] = useState<Date>(selectedDate);
   const [days, setDays] = useState<Date[]>([]);
 
@@ -70,7 +75,11 @@ function MonthlyView({ selectedDate, appointments }: Props) {
             {/* Appointments for this day */}
             <div className="flex flex-col gap-1">
               {getAppointmentsForDay(appointments, day).map((item, i) => (
-                <MonthlyAppointmentBlock key={i} appointment={item} />
+                <MonthlyAppointmentBlock
+                  onClick={() => onSelectAppointment(item)}
+                  key={i}
+                  appointment={item}
+                />
               ))}
             </div>
           </div>

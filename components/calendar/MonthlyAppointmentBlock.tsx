@@ -4,9 +4,10 @@ import AppointmentHoverCard from "../AppointmentHoverCard";
 
 type Props = {
   appointment: Appointment;
+  onClick: () => void;
 };
 
-function MonthlyAppointmentBlock({ appointment }: Props) {
+function MonthlyAppointmentBlock({ appointment, onClick }: Props) {
   const bgColor = hexToRGBA(appointment.category.color, 0.3);
   const borderColor = appointment.category.color;
 
@@ -14,6 +15,7 @@ function MonthlyAppointmentBlock({ appointment }: Props) {
     <>
       <AppointmentHoverCard appointment={appointment}>
         <div
+          onDoubleClick={onClick}
           className="text-[10px] px-2 py-0.5 rounded-sm truncate"
           style={{
             backgroundColor: bgColor,
