@@ -49,6 +49,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, appointment: newAppt });
   } catch (err) {
+    console.log(err);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }

@@ -50,6 +50,7 @@ export async function PATCH(
 
     return NextResponse.json({ success: true, appointment: updatedAppt });
   } catch (err) {
+    console.log(err);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }

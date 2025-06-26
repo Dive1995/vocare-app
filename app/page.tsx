@@ -65,8 +65,10 @@ export default function Home() {
       try {
         const data = await fetchCategories();
         setCategories(data);
-      } catch (err: any) {
-        console.log("Error trying to fetch categories: ", err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          console.log("Error trying to fetch categories: ", err.message);
+        }
       }
     };
 
@@ -78,8 +80,10 @@ export default function Home() {
     try {
       const data = await fetchPatients(search);
       setPatients(data);
-    } catch (err: any) {
-      console.log("Error trying to fetch patients: ", err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.log("Error trying to fetch patients: ", err.message);
+      }
     }
   };
 
@@ -101,8 +105,10 @@ export default function Home() {
     try {
       const data = await fetchAppointments(selectedDate);
       setAppointments(data);
-    } catch (err: any) {
-      console.log("Error trying to fetch appointments: ", err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.log("Error trying to fetch appointments: ", err.message);
+      }
     } finally {
       setLoadingAppointments(false);
     }
@@ -120,8 +126,10 @@ export default function Home() {
     try {
       await addNewAppointment(data);
       await loadAppointments();
-    } catch (err: any) {
-      console.log("Failed to add new appointment:", err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.log("Failed to add new appointment:", err.message);
+      }
     }
   };
 
@@ -130,8 +138,10 @@ export default function Home() {
       if (!selectedAppointment) return;
       await updateAppointment(selectedAppointment.id, data);
       await loadAppointments();
-    } catch (err: any) {
-      console.log("Failed to update appointment:", err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.log("Failed to update appointment:", err.message);
+      }
     }
   };
 
