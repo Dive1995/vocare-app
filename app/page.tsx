@@ -187,34 +187,34 @@ export default function Home() {
             </div>
           </div>
 
-          {loadingAppointments ? (
-            <LoadingSpinner />
-          ) : (
-            <div>
+          <div>
+            {loadingAppointments ? (
+              <LoadingSpinner />
+            ) : (
               <TabsContent value="list">
                 <ListView
                   appointments={filteredAppointments}
                   onSelectAppointment={handleAppointmentDoubleClick}
                 />
               </TabsContent>
-              <TabsContent value="week">
-                <WeeklyView
-                  selectedDate={selectedDate}
-                  appointments={filteredAppointments}
-                  onSelectAppointment={handleAppointmentDoubleClick}
-                  onEmptySpaceClick={handleEmptySpaceClick}
-                />
-              </TabsContent>
-              <TabsContent value="month">
-                <MonthlyView
-                  selectedDate={selectedDate}
-                  appointments={filteredAppointments}
-                  onSelectAppointment={handleAppointmentDoubleClick}
-                  onEmptySpaceClick={handleEmptySpaceClick}
-                />
-              </TabsContent>
-            </div>
-          )}
+            )}
+            <TabsContent value="week">
+              <WeeklyView
+                selectedDate={selectedDate}
+                appointments={filteredAppointments}
+                onSelectAppointment={handleAppointmentDoubleClick}
+                onEmptySpaceClick={handleEmptySpaceClick}
+              />
+            </TabsContent>
+            <TabsContent value="month">
+              <MonthlyView
+                selectedDate={selectedDate}
+                appointments={filteredAppointments}
+                onSelectAppointment={handleAppointmentDoubleClick}
+                onEmptySpaceClick={handleEmptySpaceClick}
+              />
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
 
@@ -231,6 +231,25 @@ export default function Home() {
         onPatientSearch={fetchPatientBySearch}
         setPatients={setPatients}
       />
+
+      <footer className="text-center text-sm text-gray-500 mt-10 border-t pt-4">
+        Created by{" "}
+        <a
+          href="https://github.com/Dive1995"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-blue-600 transition">
+          Diveshan
+        </a>{" "}
+        •{" "}
+        <a
+          href="https://diveshan.netlify.app"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-blue-600 transition">
+          Portfolio
+        </a>
+      </footer>
     </div>
   );
 }
