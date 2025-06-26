@@ -1,17 +1,17 @@
+import { NextRequest } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
 import { NextResponse } from "next/server";
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
+    const { id } = context.params;
     const body = await req.json();
 
     const { title, start, end, location, notes, patient, category } = body;
 
-    // basic validation
     if (!id || !title || !start || !end || !patient || !category) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -50,7 +50,7 @@ export async function PATCH(
 
     return NextResponse.json({ success: true, appointment: updatedAppt });
   } catch (err) {
-    console.log(err);
+    console.error("PATCH error:", err);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }
