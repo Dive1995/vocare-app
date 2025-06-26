@@ -10,12 +10,14 @@ type Props = {
   appointments: Appointment[];
   selectedDate: Date;
   onSelectAppointment: (appointment: Appointment) => void;
+  onEmptySpaceClick: () => void;
 };
 
 function WeeklyView({
   selectedDate,
   appointments,
   onSelectAppointment,
+  onEmptySpaceClick,
 }: Props) {
   const [currentWeek, setCurrentWeek] = useState<Date[]>([]);
 
@@ -82,6 +84,7 @@ function WeeklyView({
             <div key={dayIndex} className="border-l relative">
               {[...Array(24)].map((_, hour) => (
                 <div
+                  onClick={onEmptySpaceClick}
                   key={hour}
                   className={`h-[60px] border-b ${
                     isSameDay(day, now) ? "bg-green-50" : ""

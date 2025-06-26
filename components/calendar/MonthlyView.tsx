@@ -17,12 +17,14 @@ type Props = {
   appointments: Appointment[];
   selectedDate: Date;
   onSelectAppointment: (appointment: Appointment) => void;
+  onEmptySpaceClick: () => void;
 };
 
 function MonthlyView({
   selectedDate,
   appointments,
   onSelectAppointment,
+  onEmptySpaceClick,
 }: Props) {
   //   const [selectedMonth, setSelectedMonth] = useState<Date>(selectedDate);
   const [days, setDays] = useState<Date[]>([]);
@@ -65,6 +67,7 @@ function MonthlyView({
         {days.map((day, index) => (
           <div
             key={index}
+            onClick={onEmptySpaceClick}
             className={`aspect-square p-2 text-sm border border-gray-200 font-semibold font-gray-700 `}>
             <span
               className={`${

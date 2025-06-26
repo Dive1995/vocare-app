@@ -152,16 +152,25 @@ export default function Home() {
     await fetchAppointments();
   };
 
+  const handleAppointmentDoubleClick = (appt: Appointment) => {
+    setSelectedAppointment(appt);
+    setOpenTerminDialog(true);
+  };
+
+  const handleEmptySpaceClick = () => {
+    setOpenTerminDialog(true);
+  };
+
   return (
     <div className="max-w-6xl m-auto p-3 my-4">
-      <h1 className="text-3xl text-gray-700">Terminnen</h1>
+      <h1 className="text-3xl text-gray-700 my-4">Terminplaner</h1>
       <div>
         <Tabs defaultValue="list">
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <div className="flex gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
+            <div className="sm:flex gap-2">
               <DatePicker date={selectedDate} setDate={setSelectedDate} />
 
-              <TabsList>
+              <TabsList className="my-4 sm:my-0">
                 <TabsTrigger value="list">Liste</TabsTrigger>
                 <TabsTrigger value="week">Woche</TabsTrigger>
                 <TabsTrigger value="month">Monat</TabsTrigger>
@@ -199,30 +208,23 @@ export default function Home() {
             <TabsContent value="list">
               <ListView
                 appointments={filteredAppointments}
-                onSelectAppointment={(appt: Appointment) => {
-                  setSelectedAppointment(appt);
-                  setOpenTerminDialog(true);
-                }}
+                onSelectAppointment={handleAppointmentDoubleClick}
               />
             </TabsContent>
             <TabsContent value="week">
               <WeeklyView
                 selectedDate={selectedDate}
                 appointments={filteredAppointments}
-                onSelectAppointment={(appt: Appointment) => {
-                  setSelectedAppointment(appt);
-                  setOpenTerminDialog(true);
-                }}
+                onSelectAppointment={handleAppointmentDoubleClick}
+                onEmptySpaceClick={handleEmptySpaceClick}
               />
             </TabsContent>
             <TabsContent value="month">
               <MonthlyView
                 selectedDate={selectedDate}
                 appointments={filteredAppointments}
-                onSelectAppointment={(appt: Appointment) => {
-                  setSelectedAppointment(appt);
-                  setOpenTerminDialog(true);
-                }}
+                onSelectAppointment={handleAppointmentDoubleClick}
+                onEmptySpaceClick={handleEmptySpaceClick}
               />
             </TabsContent>
           </div>
