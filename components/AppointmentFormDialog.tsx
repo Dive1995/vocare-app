@@ -12,9 +12,9 @@ import {
   Appointment,
   AppointmentForm,
   Category,
-  Patient,
+  PatientSearchResult,
 } from "@/types/models";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import {
   Select,
   SelectTrigger,
@@ -32,6 +32,8 @@ type Props = {
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: AppointmentForm) => void;
   onPatientSearch: (search: string) => void;
+  patients: PatientSearchResult[];
+  setPatients: Dispatch<SetStateAction<PatientSearchResult[]>>;
 };
 
 export default function AppointmentFormDialog({
@@ -41,6 +43,8 @@ export default function AppointmentFormDialog({
   onOpenChange,
   onPatientSearch,
   onSubmit,
+  patients,
+  setPatients,
 }: Props) {
   const [formData, setFormData] = useState<AppointmentForm>({
     title: "",
@@ -52,9 +56,6 @@ export default function AppointmentFormDialog({
     category: "",
   });
   const [searchTerm, setSearchTerm] = useState("");
-  const [patients, setPatients] = useState<Patient[]>(
-    appointment ? [appointment.patient] : []
-  );
 
   // seacrch user
   useEffect(() => {

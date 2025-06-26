@@ -7,16 +7,11 @@ import {
   addDays,
   isSameMonth,
   format,
+  isToday,
 } from "date-fns";
 import { useEffect, useState } from "react";
 import MonthlyAppointmentBlock from "./MonthlyAppointmentBlock";
 import { getAppointmentsForDay } from "@/lib/calendarViewUtils";
-
-// TODO: functionalities need to add
-// [] when clicked on a cell, it should show all the appointments for the current date
-// [] highlight the current day
-// [X] show appointments in pill shaped
-// [] maybe add prev & next month buttons
 
 type Props = {
   appointments: Appointment[];
@@ -56,6 +51,9 @@ function MonthlyView({
 
   return (
     <div className="max-w-5xl m-auto">
+      <h2 className="text-2xl mb-4 w-fit m-auto bg-gray-100 py-1 text-gray-800 px-2 rounded-lg shadow">
+        {format(selectedDate, "MMMM, yyyy")}
+      </h2>
       <div className="grid grid-cols-7">
         {daysOfWeek.map((day, index) => (
           <div className="px-2 py-1" key={index}>
@@ -67,10 +65,17 @@ function MonthlyView({
         {days.map((day, index) => (
           <div
             key={index}
-            className={`aspect-square p-2 text-sm border border-gray-200 font-semibold font-gray-700 ${
-              !isSameMonth(day, selectedDate) ? "text-gray-400" : ""
-            }`}>
-            {format(day, "d")}
+            className={`aspect-square p-2 text-sm border border-gray-200 font-semibold font-gray-700 `}>
+            <span
+              className={`${
+                isToday(day)
+                  ? "text-green-600 p-1 border border-green-700 bg-green-50 rounded-lg"
+                  : !isSameMonth(day, selectedDate)
+                  ? "text-gray-400"
+                  : "text-gray-700"
+              }`}>
+              {format(day, "d")}
+            </span>
 
             {/* Appointments for this day */}
             <div className="flex flex-col gap-1">

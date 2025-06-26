@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -16,6 +16,8 @@ import { RefreshCw } from "lucide-react";
 
 type Props = {
   categories: Category[];
+  patients: PatientSearchResult[];
+  setPatients: Dispatch<SetStateAction<PatientSearchResult[]>>;
   onCategoryChange: (value: string | null) => void;
   onPatientChange: (value: string | null) => void;
   onPatientSearch: (search: string) => void;
@@ -23,6 +25,8 @@ type Props = {
 
 export default function FilterPopover({
   categories,
+  patients,
+  setPatients,
   onCategoryChange,
   onPatientChange,
   onPatientSearch,
@@ -30,7 +34,6 @@ export default function FilterPopover({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<string | null>(null);
-  const [patients, setPatients] = useState<PatientSearchResult[]>([]);
 
   // seacrch user
   useEffect(() => {

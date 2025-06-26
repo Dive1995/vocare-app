@@ -21,12 +21,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import FilterPopover from "@/components/FilterPopover";
+import ListView from "@/components/calendar/ListView";
 
 export default function Home() {
   const timeZone = "Europe/Berlin";
 
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [patients, setPatients] = useState<PatientSearchResult[]>([]);
 
   const [selectedDate, setSelectedDate] = useState(
     toZonedTime(new Date(), timeZone)
@@ -177,9 +179,11 @@ export default function Home() {
                 <PopoverContent className="w-72">
                   <FilterPopover
                     categories={categories}
+                    patients={patients}
                     onCategoryChange={setFilterCategory}
                     onPatientChange={setFilterPatient}
                     onPatientSearch={fetchPatientBySearch}
+                    setPatients={setPatients}
                   />
                 </PopoverContent>
               </Popover>
@@ -193,7 +197,13 @@ export default function Home() {
 
           <div>
             <TabsContent value="list">
-              <div>List view</div>
+              <ListView
+                appointments={filteredAppointments}
+                onSelectAppointment={(appt: Appointment) => {
+                  setSelectedAppointment(appt);
+                  setOpenTerminDialog(true);
+                }}
+              />
             </TabsContent>
             <TabsContent value="week">
               <WeeklyView
@@ -228,7 +238,9 @@ export default function Home() {
         appointment={selectedAppointment}
         onSubmit={handleDialogSubmit}
         categories={categories}
+        patients={patients}
         onPatientSearch={fetchPatientBySearch}
+        setPatients={setPatients}
       />
     </div>
   );
