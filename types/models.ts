@@ -8,6 +8,12 @@ export interface Patient {
   email: string;
 }
 
+export interface PatientSearchResult {
+  id: string;
+  firstname: string;
+  lastname: string;
+}
+
 export interface Category {
   id: string;
   label: string;

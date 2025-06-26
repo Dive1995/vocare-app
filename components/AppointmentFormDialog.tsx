@@ -8,7 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Appointment, AppointmentForm } from "@/types/models";
+import {
+  Appointment,
+  AppointmentForm,
+  Category,
+  Patient,
+} from "@/types/models";
 import { useState, useEffect } from "react";
 import {
   Select,
@@ -20,63 +25,21 @@ import {
 import { addHours, format, formatISO } from "date-fns";
 import { toast } from "sonner";
 
-const patients = [
-  {
-    id: "f5013ec7-500b-4eab-a8e7-bce158a58321",
-    firstname: "Anna",
-    lastname: "Müller",
-  },
-  {
-    id: "43d28dce-df0c-4d10-9ff0-c0295b6795b1",
-    firstname: "Lukas",
-    lastname: "Schmidt",
-  },
-  {
-    id: "dcf0e285-1856-436d-aa5f-c833397f4f92",
-    firstname: "Maria",
-    lastname: "Becker",
-  },
-  {
-    id: "0667a0a7-6909-4f05-9be1-9bc390462311",
-    firstname: "Paul",
-    lastname: "Weber",
-  },
-  {
-    id: "bde3bd51-f416-41d1-b7f2-e753e8dae296",
-    firstname: "Lea",
-    lastname: "Schneider",
-  },
-];
-
-const categories = [
-  {
-    id: "a2486be6-5e6b-4b2a-ab19-e2f8350b2897",
-    label: "Arztbesuch",
-    color: "#00ff00",
-  },
-  {
-    id: "3f0611b2-f03c-464a-94c4-48934aa80e92",
-    label: "MDK-Besuch",
-    color: "#ff0000",
-  },
-  {
-    id: "4d38eb6d-741e-4611-9b2d-d2a0a23b8727",
-    label: "Erstgespräch",
-    color: "#0000ff",
-  },
-];
-
 type Props = {
   appointment?: Appointment | null;
   open: boolean;
+  categories: Category[];
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: AppointmentForm) => void;
+  onPatientSearch: (search: string) => void;
 };
 
 export default function AppointmentFormDialog({
   appointment,
   open,
+  categories,
   onOpenChange,
+  onPatientSearch,
   onSubmit,
 }: Props) {
   const [formData, setFormData] = useState<AppointmentForm>({
@@ -88,7 +51,21 @@ export default function AppointmentFormDialog({
     patient: "",
     category: "",
   });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [patients, setPatients] = useState<Patient[]>(
+    appointment ? [appointment.patient] : []
+  );
 
+  // seacrch user
+  useEffect(() => {
+    if (searchTerm.length > 1) {
+      onPatientSearch(searchTerm);
+    } else {
+      setPatients([]);
+    }
+  }, [searchTerm]);
+
+  // set form data
   useEffect(() => {
     if (appointment) {
       const data = {
@@ -101,8 +78,25 @@ export default function AppointmentFormDialog({
         category: appointment.category.id,
       };
       setFormData(data);
-    } else {
-      // to reset
+    }
+  }, [appointment]);
+
+  // set patient when editing an appointment
+  useEffect(() => {
+    if (appointment?.patient) {
+      setPatients((prev) => {
+        const alreadyExists = prev.some((p) => p.id === appointment.patient.id);
+        if (!alreadyExists) {
+          return [...prev, appointment.patient];
+        }
+        return prev;
+      });
+    }
+  }, [appointment]);
+
+  // reset form on close
+  useEffect(() => {
+    if (!open) {
       setFormData({
         title: "",
         start: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
@@ -112,8 +106,10 @@ export default function AppointmentFormDialog({
         patient: "",
         category: "",
       });
+      setSearchTerm("");
+      setPatients([]);
     }
-  }, [appointment]);
+  }, [open]);
 
   const handleChange = (field: keyof AppointmentForm, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -133,6 +129,7 @@ export default function AppointmentFormDialog({
   };
 
   const handleValidation = () => {
+    console.log(formData);
     //  required fields check
     if (
       !formData.title ||
@@ -142,7 +139,7 @@ export default function AppointmentFormDialog({
       !formData.patient ||
       !formData.category
     ) {
-      toast("Bitte füllen Sie alle Pflichtfelder aus.");
+      toast.warning("Bitte füllen Sie alle Pflichtfelder aus.");
       return true;
     }
 
@@ -151,7 +148,7 @@ export default function AppointmentFormDialog({
     const endDate = new Date(formData.end);
 
     if (startDate > endDate) {
-      toast("Die Startzeit darf nicht nach der Endzeit liegen.");
+      toast.error("Die Startzeit darf nicht nach der Endzeit liegen.");
       return true;
     }
   };
@@ -193,22 +190,31 @@ export default function AppointmentFormDialog({
           </div>
 
           <div className="grid md:grid-cols-2 gap-2">
+            {/* patient search & select */}
             <div className="space-y-2">
-              <Label>Patient</Label>
-              <Select
-                value={formData.patient}
-                onValueChange={(val) => handleChange("patient", val)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Patient auswählen" />
-                </SelectTrigger>
-                <SelectContent>
-                  {patients.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.firstname} {p.lastname}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label>Patient suchen</Label>
+              <Input
+                placeholder="Name eingeben..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+
+              {(patients.length > 0 || appointment) && (
+                <Select
+                  value={formData.patient}
+                  onValueChange={(val) => handleChange("patient", val)}>
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Patient auswählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {patients.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.firstname} {p.lastname}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div className="space-y-2">
