@@ -56,6 +56,7 @@ export default function AppointmentFormDialog({
     category: "",
   });
   const [searchTerm, setSearchTerm] = useState("");
+  const now = new Date();
 
   // seacrch user
   useEffect(() => {
@@ -152,6 +153,24 @@ export default function AppointmentFormDialog({
       toast.error("Die Startzeit darf nicht nach der Endzeit liegen.");
       return true;
     }
+
+    // start and end must be on the same day
+    if (
+      startDate.getFullYear() !== endDate.getFullYear() ||
+      startDate.getMonth() !== endDate.getMonth() ||
+      startDate.getDate() !== endDate.getDate()
+    ) {
+      toast.error("Start und Endzeit müssen am selben Tag liegen.");
+      return true;
+    }
+
+    // start time should be not in the past
+    if (startDate < now || endDate < now) {
+      toast.error(
+        "Die Startzeit/Endzeit darf nicht in der Vergangenheit liegen."
+      );
+      return true;
+    }
   };
 
   return (
@@ -176,6 +195,7 @@ export default function AppointmentFormDialog({
               <Label>Start</Label>
               <Input
                 type="datetime-local"
+                min={format(new Date(), "yyyy-MM-dd'T'HH:mm")}
                 value={formData.start}
                 onChange={(e) => handleChange("start", e.target.value)}
               />
@@ -185,6 +205,7 @@ export default function AppointmentFormDialog({
               <Input
                 type="datetime-local"
                 value={formData.end}
+                min={format(new Date(), "yyyy-MM-dd'T'HH:mm")}
                 onChange={(e) => handleChange("end", e.target.value)}
               />
             </div>

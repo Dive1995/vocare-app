@@ -11,13 +11,17 @@
   - Kategorie (Category)
   - Klient:in (Patient)
 - Can search patients inside filters & appointments
-- Basic form validation including start/end datetime logic
 - Data is fetched per-month dynamically to reduce payload size
-- Depending on the date selected Views will get updated
+- Depending on the date selected Views will get updated and appointments will be refetched
 - Appointments are grouped by date in List view
 - Appointments that are in the past is hidden in List view but can be loaded with a click
 - Responsive UI with ShadCN and TailwindCSS
 - Handled date and time to be specific to "Europe/Berlin" timezone
+- Appointment Form validations:
+  - All required fields must be filled
+  - Start and end times must be on the same day
+  - Start time cannot be after end time
+  - Past times cannot be selected via the UI
 
 ---
 
@@ -39,7 +43,7 @@
 ### 2. UX Enhancements
 
 - When the user drags across time slots in the Weekly view, a new appointment modal can open pre-filled with the selected time range
-- Display validation messages for each form field individually
+- Better form integaration with validation
 - Improve mobile layout and interactions (eg: bottom sheet modals, better responsiveness for more mobile screens)
 - Make appointments trackable by adding a status field
 
