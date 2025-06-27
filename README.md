@@ -11,7 +11,7 @@
   - Kategorie (Category)
   - Klient:in (Patient)
 - Can search patients inside filters & appointments
-- Data is fetched per-month dynamically to reduce payload size
+- Data is fetched per-month dynamically to reduce payload size (includes 1 pre & post week data to handle edge case)
 - Depending on the date selected Views will get updated and appointments will be refetched
 - Appointments are grouped by date in List view
 - Appointments that are in the past is hidden in List view but can be loaded with a click

@@ -31,6 +31,7 @@ import {
   updateAppointment,
 } from "@/lib/appointmentService";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { getMonth, getYear } from "date-fns";
 
 export default function Home() {
   const timeZone = "Europe/Berlin";
@@ -42,6 +43,7 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState(
     toZonedTime(new Date(), timeZone)
   );
+  const [lastFetchedPeriod, setLastFetchedPeriod] = useState<string>("");
 
   const [loadingAppointments, setLoadingAppointments] = useState(false);
 
@@ -56,7 +58,13 @@ export default function Home() {
   >([]);
 
   useEffect(() => {
-    loadAppointments();
+    const currentPeriod = `${getYear(selectedDate)}-${getMonth(selectedDate)}`;
+
+    // rather than fetching on each date change even inside the same month, we check if the month/year has changed, by that we reduce the API calls
+    if (currentPeriod !== lastFetchedPeriod) {
+      loadAppointments();
+      setLastFetchedPeriod(currentPeriod);
+    }
   }, [selectedDate]);
 
   // fetch categories only on the first page load

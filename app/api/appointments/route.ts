@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabaseClient";
 import { NextResponse } from "next/server";
-import { startOfMonth, endOfMonth } from "date-fns";
+import { startOfMonth, endOfMonth, subWeeks, addWeeks } from "date-fns";
 
 // get appointment data with patient, and category details
 // we want only the current viewing month's appointments
@@ -9,8 +9,12 @@ export async function POST(req: Request) {
     const body = await req.json();
     const monthDate = new Date(body.monthDate);
 
-    const start = startOfMonth(monthDate).toISOString();
-    const end = endOfMonth(monthDate).toISOString();
+    const monthStart = startOfMonth(monthDate);
+    const monthEnd = endOfMonth(monthDate);
+
+    // fixes the edge case where the previous/next month days aren't showing any appointments in the views
+    const start = subWeeks(monthStart, 1).toISOString();
+    const end = addWeeks(monthEnd, 1).toISOString();
 
     const { data, error } = await supabase
       .from("appointments")

@@ -183,7 +183,9 @@ export default function AppointmentFormDialog({
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Titel</Label>
+            <Label className="after:content-['*'] after:ml-0.5 after:text-red-500">
+              Titel
+            </Label>
             <Input
               value={formData.title}
               onChange={(e) => handleChange("title", e.target.value)}
@@ -192,7 +194,9 @@ export default function AppointmentFormDialog({
 
           <div className="grid md:grid-cols-2 gap-2">
             <div className="space-y-2">
-              <Label>Start</Label>
+              <Label className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                Start
+              </Label>
               <Input
                 type="datetime-local"
                 min={format(new Date(), "yyyy-MM-dd'T'HH:mm")}
@@ -201,7 +205,9 @@ export default function AppointmentFormDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label>Ende</Label>
+              <Label className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                Ende
+              </Label>
               <Input
                 type="datetime-local"
                 value={formData.end}
@@ -214,7 +220,9 @@ export default function AppointmentFormDialog({
           <div className="grid md:grid-cols-2 gap-2">
             {/* patient search & select */}
             <div className="space-y-2">
-              <Label>Patient suchen</Label>
+              <Label className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                Patient suchen
+              </Label>
               <Input
                 placeholder="Name eingeben..."
                 value={searchTerm}
@@ -240,7 +248,9 @@ export default function AppointmentFormDialog({
             </div>
 
             <div className="space-y-2">
-              <Label>Kategorie</Label>
+              <Label className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                Kategorie
+              </Label>
               <Select
                 value={formData.category}
                 onValueChange={(val) => handleChange("category", val)}>
@@ -259,7 +269,9 @@ export default function AppointmentFormDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>Ort</Label>
+            <Label className="after:content-['*'] after:ml-0.5 after:text-red-500">
+              Ort
+            </Label>
             <Input
               value={formData.location}
               onChange={(e) => handleChange("location", e.target.value)}
