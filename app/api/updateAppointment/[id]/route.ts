@@ -2,13 +2,14 @@ import { NextRequest } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
 import { NextResponse } from "next/server";
 
-type UpdateContext = {
-  params: {
-    id: string;
-  };
-};
+// type UpdateContext = {
+//   params: {
+//     id: string;
+//   };
+// };
 
-export async function PATCH(req: NextRequest, context: UpdateContext) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function PATCH(req: NextRequest, context: any) {
   try {
     const { id } = context.params;
     const body = await req.json();
