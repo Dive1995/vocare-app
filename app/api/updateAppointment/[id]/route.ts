@@ -2,12 +2,15 @@ import { NextRequest } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
 import { NextResponse } from "next/server";
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+type UpdateContext = {
+  params: {
+    id: string;
+  };
+};
+
+export async function PATCH(req: NextRequest, context: UpdateContext) {
   try {
-    const { id } = params;
+    const { id } = context.params;
     const body = await req.json();
 
     const { title, start, end, location, notes, patient, category } = body;
